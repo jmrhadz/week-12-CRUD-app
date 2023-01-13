@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Meal Planner</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body id="main" class="bg-secondary">
+    <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow-lg">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 text-light" href="#">Meal Planner</a>
+        <div class="navbar-nav">
+          <div class="nav-item text-nowrap">
+            <button id="clear-button"class="btn btn-outline-danger text-secondary nav-link m-1 px-3" action="#">Clear All</button>
+          </div>
+        </div>
+      </header>
+  
+    <div id="container" class="container bg-secondary rounded-0">
+    <br>
+        <br>
+        <div id="app">
+        <div class="card bg-dark shadow-lg">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="form-group text-light">
+                            <label for="new-Meal-name">Day of the Week</label>
+                            <input type="text" class="form-control bg-light" placeholder="ex..Monday" id="new-Meal-name">
+                            <label for="new-Meal-time">Meal</label>
+                            <input type="text" class="form-control bg-light" placeholder="ex..Lunch" id="new-Meal-time">
+                        </div>
+                    </div>
+                </div>
+                <button id="new-Meal" class="btn btn-success form-control shadow bg-gradient">Create Meal</button>
+            </div>
+        </div>
+        </div>
+    <br>
+    <div id="meals">
+
+    </div>
+    </div>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
