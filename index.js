@@ -2,9 +2,9 @@
 class Recipe {
 
     //Name, Ingredients -> properties
-    constructor(name, ingredients){
+    constructor(name){
         this.name = name;
-        this.ingredients = ingredients;
+        
     }
 
 }
@@ -13,32 +13,15 @@ class Recipe {
 class Meal{
 
     //id, name
-    constructor(id, time, dayOfTheWeek){
-        this.id = id;
-        this.time = time;
+    constructor(name, meal, dayOfTheWeek){
+        this.id;
+        this.recipe_name = name;
+        this.meal = meal;
         this.day = dayOfTheWeek;
         //array of recipes
-        this.recipes = [];
-
-    }
-    
-    //method: addRecipe
-    addRecipe(recipe){
-
-        //add argument to recipes array
-        this.recipes.push(recipe);
-
+        this.img;
     }
 
-    //method: deleteRecipe
-    deleteRecipe(recipe){
-
-    //find index of argument in recipes array
-        let index = this.recipes.indexOf(recipe);
-    //remove recipe from recipes array
-        this.recipes.splice(index,1);
-
-    }
 }
 
 function alert(message){
@@ -168,17 +151,38 @@ class DOMManager {
 
     static showModal(id){
         console.log(id)
-        let meal = this.meals[id]
+        let meal
+        for(let index in this.meals){
+            if(this.meals[index].id == id){
+                meal = this.meals[index]
+            }
+        }
         
         
         console.log("viewing meal", meal)
         $('#edit-div').toggleClass('card')
         $('#edit-div').append(`
-            <h3 class="w-80">${meal.day}'s ${meal.meal}</h3>
+            <h3 class="w-80 text-center py-2">${meal.day}'s ${meal.meal}</h3>
             <p>
                 <img class="img-fluid" src="${meal.img}">
                 <strong>${meal.recipe_name}</strong>
-                <input id="edit-day-${meal.id}" value="${meal.day}"><input id="edit-meal-${meal.id}" value="${meal.meal}">
+                <select id="edit-day-${meal.id}" class="form-select form-control" aria-label="Day of the Week">
+                                <option selected value="${meal.day}">${meal.day}</option>
+                                <option value="Sunday">Sunday</option>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option> 
+                            </select>
+                            <select id="edit-meal-${meal.id}" class="form-select form-control" aria-label="Meal of the Day" required>
+                                <option selected value="${meal.meal}">${meal.meal}</option>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Brunch">Brunch</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Supper">Dinner</option>
+                            </select>
                 <button class="btn btn-warning form-control py-0" onclick="DOMManager.updateMeal('${meal.id}')">Save</button>
                 <button class="btn btn-danger form-control py-0" onclick="DOMManager.deleteMeal('${meal.id}')">Delete</button>
             </p>
@@ -196,9 +200,39 @@ class DOMManager {
 
     static submitMeal() {
         let recipe = $('#recipe-name').val();
+
         let day = $('#input-day').val();
         let meal = $('#input-meal').val();
-        console.log(recipe, day, meal)
+        MealService.createMeal(new Meal(recipe, meal, day))
+            .then(() => {
+                console.log("Creating meal...")
+                console.log("...updating list...")
+                return this.getAllMeals();
+            })
+    }
+
+    static deleteMeal(id) {
+        MealService.deleteMeal(id)
+            .then(() => {
+                return this.getAllMeals()
+            })
+    }
+
+    static updateMeal(id){
+        let meal
+        for(let index in this.meals){
+            if(this.meals[index].id == id){
+                meal = this.meals[index]
+            }
+        }
+        console.log(meal, "before edit")
+        meal.day =  $(`#edit-day-${meal.id}`).val();
+        meal.meal = $(`#edit-meal-${meal.id}`).val();
+        console.log(meal, "before update")
+        MealService.updateMeal(meal)
+            .then(() => {
+                return this.getAllMeals();
+            })
     }
 
 
@@ -233,10 +267,8 @@ class DOMManager {
                                 <option selected disabled value="">Meal of the Day</option>
                                 <option value="Breakfast">Breakfast</option>
                                 <option value="Brunch">Brunch</option>
-                                <option value="Second Breakfast">Second Breakfast</option>
                                 <option value="Lunch">Lunch</option>
-                                <option value="Supper">Supper</option>
-                                <option value="Dinner">Dinner</option>
+                                <option value="Supper">Dinner</option>
                             </select>
                         </div>
 
@@ -284,7 +316,7 @@ class DOMManager {
                                 <span id="meal-${meal.id}"><strong>${meal.meal}</strong></span>
                                 <span id="recipe-${meal.id}"><strong>${meal.recipe_name}</strong></span>
                                 <div class="container">
-                                    <span id="image-${meal.id}"><img class="img-fluid" src="https://loremflickr.com/320/240/food?random=${i++}"</span>
+                                    <span id="image-${meal.id}"><img class="img-fluid" src="<!--https://loremflickr.com/320/240/food?random=${i++}-->"</span>
                                     <button id="edit-btn-${meal.id}" class="btn btn-warning form-control py-0" data-bs-toggle="edit-div" data-bs-target="edit-div" onclick="DOMManager.showModal('${meal.id}')">Edit</button>
                                 </div>
                             </p>
