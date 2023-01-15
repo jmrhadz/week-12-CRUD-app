@@ -1,4 +1,4 @@
-//class Recipe
+//class Recipe  (not currently used)
 class Recipe {
 
     //Name, Ingredients -> properties
@@ -24,6 +24,8 @@ class Meal{
 
 }
 
+
+// alert function is not currently being used
 function alert(message){
     let main = document.getElementById('main')
     let container = document.getElementById('container')
@@ -91,6 +93,7 @@ class DOMManager {
         });
     }
 
+    //takes the meals and splits them into days of the week, then sorts them by time of day
     static parseDays(meals){
         let week = {
             "Monday":[], 
@@ -101,10 +104,12 @@ class DOMManager {
             "Saturday":[],
             "Sunday":[]
         }
-
-        let mealsOfTheDay = ["Breakfast","Brunch","Second Breakfast","Lunch","Supper","Dinner"]
-        let mealsIndex = []
+        // the dropdown menu's options  (deprecated)
+        // let mealsOfTheDay = ["Breakfast","Brunch","Second Breakfast","Lunch","Supper","Dinner"]
+        // let mealsIndex = []
         
+
+        //loop through the meals list and put each one in its day
         for(let meal of meals){
             console.log(meal)
             switch(meal.day){
@@ -131,6 +136,8 @@ class DOMManager {
                     break;
             }
         }
+
+        //loop through days and sort meals alphabetically (note: dinner is called supper until it is rendered in the dom.  didn't want to get into historical or linguistic arguments)
         for(let day in week){
             week[day].sort((a,b)=> {
                 const mealA = a.meal;
@@ -149,9 +156,12 @@ class DOMManager {
         return week;
     }
 
-    static showModal(id){
+    //display div for editing meal's day and time
+    static showModal(id){           //note//TODO: this div was originally intended to be a modal that displays over the DOM
         console.log(id)
         let meal
+
+        //loop through meal and match id
         for(let index in this.meals){
             if(this.meals[index].id == id){
                 meal = this.meals[index]
@@ -160,6 +170,7 @@ class DOMManager {
         
         
         console.log("viewing meal", meal)
+        //turn edit-div into a card and append the day and meal dropdowns with save and delete buttons
         $('#edit-div').toggleClass('card')
         $('#edit-div').append(`
             <h3 class="w-80 text-center py-2">${meal.day}'s ${meal.meal}</h3>
@@ -167,37 +178,31 @@ class DOMManager {
                 <img class="img-fluid" src="${meal.img}">
                 <strong>${meal.recipe_name}</strong>
                 <select id="edit-day-${meal.id}" class="form-select form-control" aria-label="Day of the Week">
-                                <option selected value="${meal.day}">${meal.day}</option>
-                                <option value="Sunday">Sunday</option>
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                                <option value="Saturday">Saturday</option> 
-                            </select>
-                            <select id="edit-meal-${meal.id}" class="form-select form-control" aria-label="Meal of the Day" required>
-                                <option selected value="${meal.meal}">${meal.meal}</option>
-                                <option value="Breakfast">Breakfast</option>
-                                <option value="Brunch">Brunch</option>
-                                <option value="Lunch">Lunch</option>
-                                <option value="Supper">Dinner</option>
-                            </select>
+                    <option selected value="${meal.day}">${meal.day}</option>
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option> 
+                </select>
+                <select id="edit-meal-${meal.id}" class="form-select form-control" aria-label="Meal of the Day" required>
+                    <option selected value="${meal.meal}">${meal.meal}</option>
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Brunch">Brunch</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Supper">Dinner</option>
+                </select>
                 <button class="btn btn-warning form-control py-0" onclick="DOMManager.updateMeal('${meal.id}')">Save</button>
                 <button class="btn btn-danger form-control py-0" onclick="DOMManager.deleteMeal('${meal.id}')">Delete</button>
             </p>
-            
-            
-        `)
-        // let editModal = new bootstrap.Modal($('#edit-div'))
-        // // editModal.show();
-        // setInterval(5000);
-        // console.log("hiding")
-        // editModal.hide();
-        
+        `)  //note: the default option (shown) and its value are the current values for the meal, so the user only has to touch one thing if they want
+       
         
     }
 
+    //validate input and create meal if valid
     static submitMeal() {
         let recipe = $('#recipe-name').val();
 
@@ -212,6 +217,7 @@ class DOMManager {
             })}
     }
 
+    //delete meal by id
     static deleteMeal(id) {
         MealService.deleteMeal(id)
             .then(() => {
@@ -219,32 +225,45 @@ class DOMManager {
             })
     }
 
+    //update meal by id using values from drop downs
     static updateMeal(id){
         let meal
+
+        //match meal id with passed id
         for(let index in this.meals){
             if(this.meals[index].id == id){
                 meal = this.meals[index]
             }
         }
         console.log(meal, "before edit")
+
+        //change values based on input
         meal.day =  $(`#edit-day-${meal.id}`).val();
         meal.meal = $(`#edit-meal-${meal.id}`).val();
         console.log(meal, "before update")
+
+        //PUT meal with changes
         MealService.updateMeal(meal)
             .then(() => {
                 return this.getAllMeals();
             })
     }
 
-
+    // render the DOM
     static render(meals){
-        let i = 0;
+        let i = 0;  //iterator for loremflickr images
         this.meals = meals;
         console.log(meals)
+
+        //empty the app div
         $('#app').empty();
+
+        //parse the meals into days
         const week = this.parseDays(meals)
         this.week = week;
         console.log(week)
+
+        //add the create meal div with inputs to the top of the app div
         $('#app').prepend(
             `<div id="input-div" class="card">
                 <form class="card-body">
@@ -287,6 +306,8 @@ class DOMManager {
             </div>
             `
         )
+
+        // display day divs only if they have meals
         for(let day in week){
             
             if(week[day].length>0){
@@ -306,11 +327,14 @@ class DOMManager {
                     </div>
                     `
                 )
+                // add meal as column to row in day card
                 for(let meal of week[day]){
-                    if(meal.meal == "Supper"){
+                    if(meal.meal == "Supper"){  //changes supper to dinner for order purposes: see note in parseDays method
                     meal.meal = "Dinner"
                     }
                     console.log(meal)
+
+                    //add the meal info and corresponding edit button to the day
                     $(`#${day}-row`).append(`
                         <div id="${meal.id}" class="col-sm text-center justify-content-center">
                             <p>
