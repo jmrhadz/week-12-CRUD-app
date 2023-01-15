@@ -203,12 +203,13 @@ class DOMManager {
 
         let day = $('#input-day').val();
         let meal = $('#input-meal').val();
-        MealService.createMeal(new Meal(recipe, meal, day))
-            .then(() => {
-                console.log("Creating meal...")
-                console.log("...updating list...")
-                return this.getAllMeals();
-            })
+        if(recipe && day && meal){
+            MealService.createMeal(new Meal(recipe, meal, day))
+                .then(() => {
+                    console.log("Creating meal...")
+                    console.log("...updating list...")
+                    return this.getAllMeals();
+            })}
     }
 
     static deleteMeal(id) {
@@ -246,7 +247,7 @@ class DOMManager {
         console.log(week)
         $('#app').prepend(
             `<div id="input-div" class="card">
-                <div class="card-body">
+                <form class="card-body">
                     <input type="text" id="recipe-name" class="form-control" placeholder="Recipe Name" required>
                     <div class="row">
                         <div class="col-sm">
@@ -276,7 +277,7 @@ class DOMManager {
                             <button class="btn btn-dark form-control" onclick="DOMManager.submitMeal()">Create Meal</button>
                         </div>
                     </div>
-                </div>    
+                </form>    
             </div><br>
 
             <div id="edit-div">
